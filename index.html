@@ -15,21 +15,22 @@
   :root{
     --bg:#0f172a; --card:#111827; --muted:#9ca3af; --text:#e5e7eb; --accent:#06b6d4; --border:rgba(255,255,255,.12);
     --copy-bg:#16a34a; --copy-bg2:#059669; --copy-border:rgba(22,163,74,.35);
-    --hint:#6b7280; --header-bg:#ffffff; --header-text:#0b1220;
-    --ctl-h: 44px;
+    --reset-bg:#ef4444; --reset-bg2:#dc2626; --reset-border:rgba(239,68,68,.4);
+    --hint:#6b7280; --ctl-h: 44px;
   }
   @media (prefers-color-scheme: light){
     :root{
       --bg:#f6f7fb; --card:#ffffff; --muted:#6b7280; --text:#0b1220; --accent:#0ea5e9; --border:rgba(0,0,0,.12);
       --copy-bg:#16a34a; --copy-bg2:#22c55e; --copy-border:rgba(34,197,94,.35);
-      --hint:#9ca3af; --header-bg:#ffffff; --header-text:#0b1220;
+      --reset-bg:#ef4444; --reset-bg2:#f87171; --reset-border:rgba(239,68,68,.35);
+      --hint:#9ca3af;
     }
   }
   html,body{height:100%}
   body{ margin:0; background:var(--bg); color:var(--text);
     font-family: system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Helvetica,Arial;
     -webkit-font-smoothing: antialiased; line-height:1.35; }
-  header{ background: var(--header-bg); color: var(--header-text); width:100%; box-shadow:0 2px 8px rgba(0,0,0,.08); }
+  header{ background:#fff; color:#0b1220; width:100%; box-shadow:0 2px 8px rgba(0,0,0,.08); }
   .header-inner{ max-width:1100px; margin:0 auto; padding:18px 16px; display:flex; align-items:center; }
   header h1{ margin:0; font-size:22px; font-weight:800; letter-spacing:.3px; text-transform:uppercase; }
   .container{ max-width:1100px; margin:16px auto 24px; padding:0 16px; }
@@ -46,8 +47,7 @@
     line-height:1.3;
   }
   select{ height: var(--ctl-h); line-height: calc(var(--ctl-h) - 2px); }
-  .date-row{ display:flex; gap:8px; align-items:stretch }
-  /* Fake date visible */
+  .date-row{ display:flex; gap:8px; align-items:center; }
   .date-wrap{ position:relative; flex:1 }
   .date-fake{
     height: var(--ctl-h); width:100%;
@@ -58,31 +58,46 @@
   }
   .date-native{
     position:absolute; inset:0; width:100%; height:100%;
-    opacity:0; /* invisible pero operativo */
-    -webkit-appearance: none;
-    appearance: none;
+    opacity:0;
+    -webkit-appearance:none; appearance:none;
   }
   .date-row button{
-    flex:0 0 var(--ctl-h); width:var(--ctl-h); height: var(--ctl-h);
-    border-radius:12px; border:1px solid var(--border);
-    background:var(--card); color:var(--text); font-size:20px; line-height:1; font-weight:700;
-    display:flex; align-items:center; justify-content:center; cursor:pointer;
+    flex:0 0 auto; height: var(--ctl-h); padding:0 14px; border-radius:12px;
+    border:1px solid var(--border); background:var(--card); color:var(--text);
+    font-size:15px; font-weight:700; display:inline-flex; align-items:center; justify-content:center; gap:10px; cursor:pointer; line-height:1;
   }
+  .date-row button:hover,.date-row button:focus-visible{ outline:none; border-color: rgba(14,165,233,.5); box-shadow: 0 0 0 3px rgba(14,165,233,.15); }
 
   textarea{ min-height:84px; resize:vertical; }
   textarea::placeholder{ color: var(--hint); opacity:.75; white-space:pre-line; }
   .row{ display:grid; grid-template-columns:1fr 1fr; gap:12px }
   @media (max-width: 640px){ .row{ grid-template-columns:1fr; } }
-  .btn{ appearance:none; border:1px solid var(--border); background:var(--accent); color:#fff;
-    padding:12px 16px; border-radius:12px; font-weight:600; cursor:pointer; width:100%; }
-  .btn-copy{ width:100%; background:linear-gradient(180deg,var(--copy-bg),var(--copy-bg2));
-    border:1px solid var(--copy-border); color:#fff; padding:12px 16px; font-weight:700; border-radius:12px; }
+
+  .btn-copy{
+    width:100%; background:linear-gradient(180deg,var(--copy-bg),var(--copy-bg2));
+    border:1px solid var(--copy-border); color:#fff; padding:12px 16px; font-weight:700; border-radius:12px; cursor:pointer;
+  }
+  .btn-reset{
+    width:100%; background:linear-gradient(180deg,var(--reset-bg),var(--reset-bg2));
+    border:1px solid var(--reset-border); color:#fff; padding:12px 16px; font-weight:700; border-radius:12px; cursor:pointer;
+  }
+  .foot-actions{ display:grid; grid-template-columns:1fr 1fr; gap:12px }
+
+  /* Feedback “sombreado” al pulsar */
+  .btn-copy:is(:active,.is-pressed),
+  .btn-reset:is(:active,.is-pressed){
+    filter: brightness(.9);
+    box-shadow: inset 0 0 0 9999px rgba(0,0,0,.08);
+  }
+  .btn-copy:disabled, .btn-reset:disabled{
+    opacity:.6; cursor:not-allowed;
+  }
+
   pre{ margin:0; background:transparent; border:1px dashed var(--border);
     border-radius:12px; padding:14px; white-space:pre-wrap; word-break:break-word; min-height:240px;
     text-align: justify; text-justify: inter-word; }
   .warn{ color:#dc2626; font-size:12px; margin-top:8px }
   .spacer{ height:8px }
-
   .muted { color: var(--hint); }
 </style>
 </head>
@@ -105,7 +120,7 @@
               <div id="dateFake" class="date-fake" aria-hidden="true">dd/mm/aaaa</div>
               <input type="date" id="fecha" class="date-native" aria-label="Fecha">
             </div>
-            <button id="abrirFecha" type="button" aria-label="Abrir selector de fecha">📅</button>
+            <button id="abrirFecha" type="button" aria-label="Abrir selector de fecha">📅 <span style="font-weight:600">Seleccionar fecha</span></button>
           </div>
 
           <div class="row">
@@ -113,36 +128,15 @@
               <label>Hora</label>
               <div style="display:flex; gap:8px">
                 <select id="hour" aria-label="Hora" style="flex:1">
-                  <option value="00">00</option>
-<option value="01">01</option>
-<option value="02">02</option>
-<option value="03">03</option>
-<option value="04">04</option>
-<option value="05">05</option>
-<option value="06">06</option>
-<option value="07">07</option>
-<option value="08">08</option>
-<option value="09">09</option>
-<option value="10">10</option>
-<option value="11">11</option>
-<option value="12" selected>12</option>
-<option value="13">13</option>
-<option value="14">14</option>
-<option value="15">15</option>
-<option value="16">16</option>
-<option value="17">17</option>
-<option value="18">18</option>
-<option value="19">19</option>
-<option value="20">20</option>
-<option value="21">21</option>
-<option value="22">22</option>
-<option value="23">23</option>
+                  <option value="00">00</option><option value="01">01</option><option value="02">02</option><option value="03">03</option>
+                  <option value="04">04</option><option value="05">05</option><option value="06">06</option><option value="07">07</option>
+                  <option value="08">08</option><option value="09">09</option><option value="10">10</option><option value="11">11</option>
+                  <option value="12" selected>12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option>
+                  <option value="16">16</option><option value="17">17</option><option value="18">18</option><option value="19">19</option>
+                  <option value="20">20</option><option value="21">21</option><option value="22">22</option><option value="23">23</option>
                 </select>
                 <select id="minute" aria-label="Minutos" style="flex:1">
-                  <option value="00" selected>00</option>
-                  <option value="15">15</option>
-                  <option value="30">30</option>
-                  <option value="45">45</option>
+                  <option value="00" selected>00</option><option value="15">15</option><option value="30">30</option><option value="45">45</option>
                 </select>
               </div>
             </div>
@@ -156,14 +150,13 @@
           </div>
 
           <label>Ubicación</label>
-          <textarea id="ubicacion" placeholder="Despacho - Artigas Abogados
-Calle Esperanto, 5, 7-B de Benidorm."></textarea>
+          <textarea id="ubicacion" placeholder="C/ Esperanto, 5, 7º-B de Benidorm.">C/ Esperanto, 5, 7º-B de Benidorm.</textarea>
 
-          <label>Enlace Google Maps <span class="muted">(por defecto: despacho)</span></label>
-          <input id="maps" placeholder="https://maps.app.goo.gl/fES91xJhujFg9wdi8">
+          <label>Enlace Google Maps <span class="muted">(si es el despacho lo puedes dejar en blanco; si es otra dirección, se añade solo si lo pegas aquí)</span></label>
+          <input id="maps" value="https://maps.app.goo.gl/fES91xJhujFg9wdi8" placeholder="https://maps.app.goo.gl/…">
 
           <div class="spacer"></div>
-          <button class="btn" id="gen" type="button">Generar</button>
+          <!-- Sin botón Generar: autogeneración -->
         </div>
       </div>
 
@@ -172,10 +165,12 @@ Calle Esperanto, 5, 7-B de Benidorm."></textarea>
           <h2>Mensaje generado</h2>
           <pre id="salida" aria-live="polite"></pre>
           <div class="warn" id="warn" hidden>Completa fecha y hora.</div>
-          <div class="warn" id="warnMaps" hidden>Ubicación distinta de despacho detectada. Si quieres incluir el enlace de Google Maps, pega aquí su URL.</div>
         </div>
         <div class="foot">
-          <button class="btn-copy" id="copiar" type="button">Copiar</button>
+          <div class="foot-actions">
+            <button class="btn-copy" id="copiar" type="button">Copiar</button>
+            <button class="btn-reset" id="reiniciar" type="button">Reiniciar</button>
+          </div>
         </div>
       </div>
     </div>
@@ -187,179 +182,234 @@ document.addEventListener('DOMContentLoaded', function(){
     navigator.serviceWorker.register('./service-worker.js', {scope: './'}).catch(()=>{});
   }
 
+  // DOM
   const fecha = document.getElementById('fecha');
-  const fake = document.getElementById('dateFake');
+  const fake  = document.getElementById('dateFake');
   const btnFecha = document.getElementById('abrirFecha');
+  const salida = document.getElementById('salida');
+  const warn   = document.getElementById('warn');
+  const hourSel = document.getElementById('hour');
+  const minuteSel = document.getElementById('minute');
+  const tipoSel = document.getElementById('tipo');
+  const ubic   = document.getElementById('ubicacion');
+  const maps   = document.getElementById('maps');
+  const btnCopiar = document.getElementById('copiar');
+  const btnReiniciar = document.getElementById('reiniciar');
 
-  const salida = document.getElementById('salida'), warn = document.getElementById('warn');
-  const warnMaps = document.getElementById('warnMaps');
-  const hourSel = document.getElementById('hour'), minuteSel = document.getElementById('minute'), tipoSel = document.getElementById('tipo');
-  const ubic = document.getElementById('ubicacion'); const maps = document.getElementById('maps');
-
+  // Utils
   const WD = ['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
   const MO = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
   const two = n => (n<10? '0'+n : ''+n);
-  const DESPACHO_LINK = 'https://maps.app.goo.gl/fES91xJhujFg9wdi8';
-  const OFFICE_LINE  = 'Calle Esperanto, 5, 7-B de Benidorm.';
+  const DESPACHO_TXT = 'C/ Esperanto, 5, 7º-B de Benidorm.'; // comparación exacta
+  const DEFAULT_MAPS = 'https://maps.app.goo.gl/fES91xJhujFg9wdi8';
 
   function ymdToDisplay(ymd){
-    const [y,m,d] = ymd.split('-').map(Number);
-    if (!y || !m || !d) return 'dd/mm/aaaa';
+    const [y,m,d] = (ymd||'').split('-').map(Number);
+    if(!y||!m||!d) return 'dd/mm/aaaa';
     return String(d).padStart(2,'0') + '/' + String(m).padStart(2,'0') + '/' + y;
   }
-
-  function ensureDateSet(){
-    const today = new Date();
-    try{ fecha.valueAsDate = today; }catch(e){
-      const y=today.getFullYear(), m=today.getMonth()+1, d=today.getDate();
-      fecha.value = `${y}-${(m<10?'0'+m:m)}-${(d<10?'0'+d:d)}`;
-    }
-    fake.textContent = ymdToDisplay(fecha.value);
-  }
-
   function fmtFecha(dt){
-    const wd = WD[dt.getDay()], day = dt.getDate(), month = MO[dt.getMonth()], year = dt.getFullYear();
-    return `${wd}, día ${day} de ${month} de ${year}`;
+    return `${WD[dt.getDay()]} ${dt.getDate()} de ${MO[dt.getMonth()]} de ${dt.getFullYear()}`;
   }
   function fmtHora(dt){ return `${two(dt.getHours())}:${two(dt.getMinutes())} horas`; }
-
-  function isDespacho(text){
-    if(!text || !text.trim()) return true;
-    const t = text.toLowerCase();
-    return t.includes('despacho - artigas abogados') && t.includes('esperanto') && t.includes('benidorm');
+  function isTomorrow(dt){
+    const now = new Date();
+    const a = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const b = new Date(dt.getFullYear(), dt.getMonth(), dt.getDate());
+    return ((b - a) / 86400000) === 1;
   }
-
-  function normalizeExternalLoc(raw){
-    if(!raw) return '';
-    let s = raw.replace(/\s+/g,' ').trim();
-    s = s.replace(/^despacho\s*-\s*artigas abogados\s*/i,'').trim();
-    s = s.replace(/,?\s*españa\.?$/i,'').trim();
-    s = s.replace(/,\s*$/,'');
-    if (/alicante\s*\(alicante\)/i.test(s)) return s;
-    if (/\balicante\b/i.test(s) && !/\(alicante\)/i.test(s)) return s + ' (Alicante)';
-    return s;
-  }
-
   function getSelectedDateTime(){
-    let dt;
-    try { dt = fecha.valueAsDate; } catch(e) { dt = null; }
-    if (!dt || isNaN(dt)) {
+    let dt = null;
+    try { dt = fecha.valueAsDate || null; } catch(e){ dt = null; }
+    if (!dt) {
       const [y,m,d]=(fecha.value||'').split('-').map(Number);
-      dt = new Date(y||0, (m||1)-1, d||1, 0, 0, 0, 0);
+      if (!y||!m||!d) return null;
+      dt = new Date(y, m-1, d);
     }
-    const hh = Number((document.getElementById('hour')||{}).value || '12');
-    const mm = Number((document.getElementById('minute')||{}).value || '00');
-    dt.setHours(hh, mm, 0, 0);
+    dt.setHours(Number(hourSel.value||'12'), Number(minuteSel.value||'00'), 0, 0);
     return dt;
   }
 
-  function genConfirmDespacho(dt, link){
-    const f = fmtFecha(dt), h = fmtHora(dt);
-    const l = (link && link.trim()) ? link.trim() : DESPACHO_LINK;
+  // Mensajes
+  function msgConfirmDespacho(dt){
     return [
       'Estimado/a cliente:',
       '',
-      `Le confirmamos su cita en Artigas Abogados para el ${f}, a las ${h}, en nuestro despacho sito en ${OFFICE_LINE}`,
+      `Le confirmamos su cita con Adolfo Artigas para el ${fmtFecha(dt)} a las ${fmtHora(dt)}, en nuestro despacho ubicado en ${DESPACHO_TXT}`,
       '',
-      l,
+      (maps.value.trim() || DEFAULT_MAPS),
       '',
-      'En caso de que no pudiera acudir, le agradeceríamos que nos lo comunicara respondiendo a este mismo WhatsApp o al correo info@artigasabogados.com, con el fin de reorganizar la agenda y poder establecer una nueva cita.',
+      'En caso de que no pudiera asistir, le agradeceríamos que nos lo comunicara respondiendo a este mismo WhatsApp, con el fin de reorganizar la agenda y poder fijar una nueva cita.',
       '',
-      'Un cordial saludo,',
-      'Artigas Abogados'
+      'Reciba un cordial saludo.'
     ].join('\n');
   }
-  function genRecordDespacho(dt, link){
-    const h = fmtHora(dt);
-    const l = (link && link.trim()) ? link.trim() : DESPACHO_LINK;
+  function msgRecordDespacho(dt){
+    const cuando = isTomorrow(dt) ? `mañana a las ${fmtHora(dt)}` : `el ${fmtFecha(dt)} a las ${fmtHora(dt)}`;
     return [
       'Estimado/a cliente:',
       '',
-      `Le recordamos su cita en Artigas Abogados para mañana a las ${h}, en nuestro despacho sito en ${OFFICE_LINE}`,
+      `Le recordamos su cita con Adolfo Artigas para ${cuando}, en nuestro despacho ubicado en ${DESPACHO_TXT}`,
       '',
-      l,
+      (maps.value.trim() || DEFAULT_MAPS),
       '',
-      'En caso de que no pudiera acudir, le agradeceríamos que nos lo comunicara respondiendo a este mismo WhatsApp o al correo info@artigasabogados.com, con el fin de reorganizar la agenda.',
+      'En caso de que no pudiera asistir, le agradeceríamos que nos lo comunicara respondiendo a este mismo WhatsApp, con el fin de reorganizar la agenda y poder fijar una nueva cita.',
       '',
-      'Un cordial saludo,',
-      'Artigas Abogados'
+      'Reciba un cordial saludo.'
     ].join('\n');
   }
-  function genConfirmOtra(dt, locRaw, link){
-    const f = fmtFecha(dt), h = fmtHora(dt);
-    const loc = normalizeExternalLoc(locRaw);
+
+  function msgConfirmOtra(dt, dir, link){
     const lines = [
       'Estimado/a cliente:',
       '',
-      `Le confirmamos su cita con Adolfo Artigas para el ${f}, a las ${h}, en ${loc}`,
-      ''
+      `Le confirmamos su cita con Adolfo Artigas para el ${fmtFecha(dt)} a las ${fmtHora(dt)}, en ${dir}.`,
+      '' // salto tras dirección
     ];
-    if (link && link.trim()) { lines.push(link.trim(), ''); }
-    lines.push('En caso de que no pudiera asistir, le agradeceríamos que nos lo comunicara respondiendo a este mismo WhatsApp o al correo info@artigasabogados.com, con el fin de reorganizar la agenda.');
-    lines.push('', 'Un cordial saludo,', 'Artigas Abogados');
+    const l = (link && link.trim()) ? link.trim() : '';
+    if (l) lines.push(l, '');
+    lines.push(
+      'En caso de que no pudiera asistir, le agradeceríamos que nos lo comunicara respondiendo a este mismo WhatsApp, con el fin de reorganizar la agenda y poder fijar una nueva cita.',
+      '',
+      'Reciba un cordial saludo.'
+    );
     return lines.join('\n');
   }
-  function genRecordOtra(dt, locRaw, link){
-    const h = fmtHora(dt);
-    const loc = normalizeExternalLoc(locRaw);
+  function msgRecordOtra(dt, dir, link){
+    const cuando = isTomorrow(dt) ? `mañana a las ${fmtHora(dt)}` : `el ${fmtFecha(dt)} a las ${fmtHora(dt)}`;
     const lines = [
       'Estimado/a cliente:',
       '',
-      `Le recordamos su cita con Adolfo Artigas para mañana a las ${h}, en ${loc}`,
-      ''
+      `Le recordamos su cita con Adolfo Artigas para ${cuando}, en ${dir}.`,
+      '' // salto tras dirección
     ];
-    if (link && link.trim()) { lines.push(link.trim(), ''); }
-    lines.push('En caso de que no pudiera asistir, le agradeceríamos que nos lo comunicara respondiendo a este mismo WhatsApp o al correo info@artigasabogados.com, con el fin de reorganizar la agenda.');
-    lines.push('', 'Un cordial saludo,', 'Artigas Abogados');
+    const l = (link && link.trim()) ? link.trim() : '';
+    if (l) lines.push(l, '');
+    lines.push(
+      'En caso de que no pudiera asistir, le agradeceríamos que nos lo comunicara respondiendo a este mismo WhatsApp, con el fin de reorganizar la agenda y poder fijar una nueva cita.',
+      '',
+      'Reciba un cordial saludo.'
+    );
     return lines.join('\n');
+  }
+
+  function msgConfirmSinDir(dt){
+    return [
+      'Estimado/a cliente:',
+      '',
+      `Le confirmamos su cita con Adolfo Artigas para el ${fmtFecha(dt)} a las ${fmtHora(dt)}.`,
+      '',
+      'En caso de que no pudiera asistir, le agradeceríamos que nos lo comunicara respondiendo a este mismo WhatsApp, con el fin de reorganizar la agenda y poder fijar una nueva cita.',
+      '',
+      'Reciba un cordial saludo.'
+    ].join('\n');
+  }
+  function msgRecordSinDir(dt){
+    const cuando = isTomorrow(dt) ? `mañana a las ${fmtHora(dt)}` : `el ${fmtFecha(dt)} a las ${fmtHora(dt)}`;
+    return [
+      'Estimado/a cliente:',
+      '',
+      `Le recordamos su cita con Adolfo Artigas para ${cuando}.`,
+      '',
+      'En caso de que no pudiera asistir, le agradeceríamos que nos lo comunicara respondiendo a este mismo WhatsApp, con el fin de reorganizar la agenda y poder fijar una nueva cita.',
+      '',
+      'Reciba un cordial saludo.'
+    ].join('\n');
   }
 
   function generar(){
     const dt = getSelectedDateTime();
     if(!dt || isNaN(dt.getTime())){
-      warn.hidden=false; salida.textContent='';
+      warn.hidden = false;
+      salida.textContent = '';
       return;
     }
-    warn.hidden=true;
-    const desp = isDespacho(ubic.value);
-    let text='';
-    warnMaps.hidden = true;
+    warn.hidden = true;
 
-    if(tipoSel.value === 'confirmacion'){
-      text = desp ? genConfirmDespacho(dt, maps.value) : genConfirmOtra(dt, ubic.value, maps.value);
-    }else{
-      text = desp ? genRecordDespacho(dt, maps.value) : genRecordOtra(dt, ubic.value, maps.value);
+    const dirRaw = (ubic.value || '').trim();
+    const linkRaw = (maps.value || '').trim();
+    let texto = '';
+
+    if (dirRaw === '') {
+      texto = (tipoSel.value === 'confirmacion') ? msgConfirmSinDir(dt) : msgRecordSinDir(dt);
+    } else if (dirRaw === DESPACHO_TXT) {
+      texto = (tipoSel.value === 'confirmacion') ? msgConfirmDespacho(dt) : msgRecordDespacho(dt);
+    } else {
+      texto = (tipoSel.value === 'confirmacion')
+        ? msgConfirmOtra(dt, dirRaw, linkRaw)
+        : msgRecordOtra(dt, dirRaw, linkRaw);
     }
 
-    if (!desp && !(maps.value && maps.value.trim())) {
-      warnMaps.hidden = false;
-    }
-
-    salida.textContent = text;
+    salida.textContent = texto;
   }
 
-  // Inicialización
-  ensureDateSet();
-  document.getElementById('hour').value = '12';
-  document.getElementById('minute').value = '00';
-  generar();
-
-  // Sincroniza fake cuando cambie nativo
-  fecha.addEventListener('change', ()=>{
-    fake.textContent = ymdToDisplay(fecha.value);
-  });
-
-  // Abrir picker al pulsar fake o botón
-  function openPicker(){
-    if (typeof fecha.showPicker === 'function') {
-      try { fecha.showPicker(); return; } catch(e){}
+  // Inicialización (mañana)
+  function setTomorrow(){
+    const t = new Date();
+    t.setDate(t.getDate() + 1);
+    try { fecha.valueAsDate = t; } catch(e){
+      const y=t.getFullYear(), m=t.getMonth()+1, d=t.getDate();
+      fecha.value = `${y}-${(m<10?'0'+m:m)}-${(d<10?'0'+d:d)}`;
     }
+    fake.textContent = ymdToDisplay(fecha.value);
+  }
+  setTomorrow();
+
+  // Reset total
+  function resetAll(){
+    setTomorrow();
+    hourSel.value = '12';
+    minuteSel.value = '00';
+    tipoSel.value = 'confirmacion';
+    ubic.value = DESPACHO_TXT;
+    maps.value = DEFAULT_MAPS;
+    generar();
+  }
+
+  // Feedback sombreados
+  function pressEffect(btn){
+    btn.classList.add('is-pressed');
+    btn.disabled = true;
+    setTimeout(()=>{ btn.classList.remove('is-pressed'); btn.disabled=false; }, 350);
+  }
+
+  // Eventos + autogeneración
+  function openNativePicker(){
+    if (typeof fecha.showPicker === 'function') { try { fecha.showPicker(); return; } catch(e){} }
+    try { fecha.click(); } catch(e){}
     fecha.focus();
   }
-  fake.addEventListener('click', openPicker);
-  btnFecha.addEventListener('click', openPicker);
+  btnFecha.addEventListener('click', openNativePicker);
+  fake.addEventListener('click', openNativePicker);
 
-  // Acceso por teclado: si el nativo recibe foco, no pasa nada; el valor se refleja en change
+  fecha.addEventListener('change', ()=>{ fake.textContent = ymdToDisplay(fecha.value); generar(); });
+  hourSel.addEventListener('change', generar);
+  minuteSel.addEventListener('change', generar);
+  tipoSel.addEventListener('change', generar);
+
+  // Reglas Ubicación/Maps
+  ubic.addEventListener('input', ()=>{
+    const dir = (ubic.value || '').trim();
+    if (dir === '' || dir !== DESPACHO_TXT) {
+      if ((maps.value || '').trim() === DEFAULT_MAPS) {
+        maps.value = ''; // no reponer automáticamente
+      }
+    }
+    generar();
+  });
+  maps.addEventListener('input', generar);
+
+  btnCopiar.addEventListener('click', ()=>{
+    navigator.clipboard.writeText(salida.textContent);
+    pressEffect(btnCopiar);
+  });
+  btnReiniciar.addEventListener('click', ()=>{
+    resetAll();
+    pressEffect(btnReiniciar);
+  });
+
+  // Primer render
+  generar();
 });
 </script>
 </body>
