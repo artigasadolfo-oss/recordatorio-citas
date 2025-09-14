@@ -16,6 +16,7 @@
     --bg:#0f172a; --card:#111827; --muted:#9ca3af; --text:#e5e7eb; --accent:#06b6d4; --border:rgba(255,255,255,.12);
     --copy-bg:#16a34a; --copy-bg2:#059669; --copy-border:rgba(22,163,74,.35);
     --hint:#6b7280; --header-bg:#ffffff; --header-text:#0b1220;
+    --ctl-h: 44px;
   }
   @media (prefers-color-scheme: light){
     :root{
@@ -41,9 +42,33 @@
   input,textarea,select{
     display:block; width:100%; max-width:100%;
     padding:12px; border-radius:12px; border:1px solid var(--border);
-    background:transparent; color:var(--text); outline:none; font-size:15px;
+    background:transparent; color:var(--text); outline:none; font-size:16px;
+    line-height:1.3;
   }
-  input[type="date"]{ -webkit-appearance: none; appearance:none; width:100%; }
+  select{ height: var(--ctl-h); line-height: calc(var(--ctl-h) - 2px); }
+  .date-row{ display:flex; gap:8px; align-items:stretch }
+  /* Fake date visible */
+  .date-wrap{ position:relative; flex:1 }
+  .date-fake{
+    height: var(--ctl-h); width:100%;
+    border:1px solid var(--border); border-radius:12px;
+    padding: 10px 12px; display:flex; align-items:center;
+    background:transparent; color:var(--text);
+    font-size:16px; line-height:1.3; user-select:none;
+  }
+  .date-native{
+    position:absolute; inset:0; width:100%; height:100%;
+    opacity:0; /* invisible pero operativo */
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  .date-row button{
+    flex:0 0 var(--ctl-h); width:var(--ctl-h); height: var(--ctl-h);
+    border-radius:12px; border:1px solid var(--border);
+    background:var(--card); color:var(--text); font-size:20px; line-height:1; font-weight:700;
+    display:flex; align-items:center; justify-content:center; cursor:pointer;
+  }
+
   textarea{ min-height:84px; resize:vertical; }
   textarea::placeholder{ color: var(--hint); opacity:.75; white-space:pre-line; }
   .row{ display:grid; grid-template-columns:1fr 1fr; gap:12px }
@@ -57,6 +82,8 @@
     text-align: justify; text-justify: inter-word; }
   .warn{ color:#dc2626; font-size:12px; margin-top:8px }
   .spacer{ height:8px }
+
+  .muted { color: var(--hint); }
 </style>
 </head>
 <body>
@@ -73,7 +100,13 @@
           <h2>Datos de partida</h2>
 
           <label>Fecha de la cita</label>
-          <input type="date" id="fecha">
+          <div class="date-row">
+            <div class="date-wrap">
+              <div id="dateFake" class="date-fake" aria-hidden="true">dd/mm/aaaa</div>
+              <input type="date" id="fecha" class="date-native" aria-label="Fecha">
+            </div>
+            <button id="abrirFecha" type="button" aria-label="Abrir selector de fecha">📅</button>
+          </div>
 
           <div class="row">
             <div>
@@ -81,29 +114,29 @@
               <div style="display:flex; gap:8px">
                 <select id="hour" aria-label="Hora" style="flex:1">
                   <option value="00">00</option>
-                  <option value="01">01</option>
-                  <option value="02">02</option>
-                  <option value="03">03</option>
-                  <option value="04">04</option>
-                  <option value="05">05</option>
-                  <option value="06">06</option>
-                  <option value="07">07</option>
-                  <option value="08">08</option>
-                  <option value="09">09</option>
-                  <option value="10">10</option>
-                  <option value="11">11</option>
-                  <option value="12" selected>12</option>
-                  <option value="13">13</option>
-                  <option value="14">14</option>
-                  <option value="15">15</option>
-                  <option value="16">16</option>
-                  <option value="17">17</option>
-                  <option value="18">18</option>
-                  <option value="19">19</option>
-                  <option value="20">20</option>
-                  <option value="21">21</option>
-                  <option value="22">22</option>
-                  <option value="23">23</option>
+<option value="01">01</option>
+<option value="02">02</option>
+<option value="03">03</option>
+<option value="04">04</option>
+<option value="05">05</option>
+<option value="06">06</option>
+<option value="07">07</option>
+<option value="08">08</option>
+<option value="09">09</option>
+<option value="10">10</option>
+<option value="11">11</option>
+<option value="12" selected>12</option>
+<option value="13">13</option>
+<option value="14">14</option>
+<option value="15">15</option>
+<option value="16">16</option>
+<option value="17">17</option>
+<option value="18">18</option>
+<option value="19">19</option>
+<option value="20">20</option>
+<option value="21">21</option>
+<option value="22">22</option>
+<option value="23">23</option>
                 </select>
                 <select id="minute" aria-label="Minutos" style="flex:1">
                   <option value="00" selected>00</option>
@@ -126,8 +159,8 @@
           <textarea id="ubicacion" placeholder="Despacho - Artigas Abogados
 Calle Esperanto, 5, 7-B de Benidorm."></textarea>
 
-          <label>Enlace Google Maps</label>
-          <input id="maps" value="https://maps.app.goo.gl/fES91xJhujFg9wdi8">
+          <label>Enlace Google Maps <span class="muted">(por defecto: despacho)</span></label>
+          <input id="maps" placeholder="https://maps.app.goo.gl/fES91xJhujFg9wdi8">
 
           <div class="spacer"></div>
           <button class="btn" id="gen" type="button">Generar</button>
@@ -139,6 +172,7 @@ Calle Esperanto, 5, 7-B de Benidorm."></textarea>
           <h2>Mensaje generado</h2>
           <pre id="salida" aria-live="polite"></pre>
           <div class="warn" id="warn" hidden>Completa fecha y hora.</div>
+          <div class="warn" id="warnMaps" hidden>Ubicación distinta de despacho detectada. Si quieres incluir el enlace de Google Maps, pega aquí su URL.</div>
         </div>
         <div class="foot">
           <button class="btn-copy" id="copiar" type="button">Copiar</button>
@@ -152,41 +186,49 @@ document.addEventListener('DOMContentLoaded', function(){
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('./service-worker.js', {scope: './'}).catch(()=>{});
   }
-  const $ = s => document.querySelector(s);
-  const fecha = $('#fecha'), tipo = $('#tipo');
-  const ubic = $('#ubicacion'), maps = $('#maps');
-  const salida = $('#salida'), warn = $('#warn');
-  const hourSel = $('#hour'), minuteSel = $('#minute');
+
+  const fecha = document.getElementById('fecha');
+  const fake = document.getElementById('dateFake');
+  const btnFecha = document.getElementById('abrirFecha');
+
+  const salida = document.getElementById('salida'), warn = document.getElementById('warn');
+  const warnMaps = document.getElementById('warnMaps');
+  const hourSel = document.getElementById('hour'), minuteSel = document.getElementById('minute'), tipoSel = document.getElementById('tipo');
+  const ubic = document.getElementById('ubicacion'); const maps = document.getElementById('maps');
 
   const WD = ['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
   const MO = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
   const two = n => (n<10? '0'+n : ''+n);
+  const DESPACHO_LINK = 'https://maps.app.goo.gl/fES91xJhujFg9wdi8';
+  const OFFICE_LINE  = 'Calle Esperanto, 5, 7-B de Benidorm.';
+
+  function ymdToDisplay(ymd){
+    const [y,m,d] = ymd.split('-').map(Number);
+    if (!y || !m || !d) return 'dd/mm/aaaa';
+    return String(d).padStart(2,'0') + '/' + String(m).padStart(2,'0') + '/' + y;
+  }
 
   function ensureDateSet(){
     const today = new Date();
-    const y=today.getFullYear(), m=today.getMonth()+1, d=today.getDate();
-    if (!fecha.value) fecha.value = `${y}-${(m<10?'0'+m:m)}-${(d<10?'0'+d:d)}`;
+    try{ fecha.valueAsDate = today; }catch(e){
+      const y=today.getFullYear(), m=today.getMonth()+1, d=today.getDate();
+      fecha.value = `${y}-${(m<10?'0'+m:m)}-${(d<10?'0'+d:d)}`;
+    }
+    fake.textContent = ymdToDisplay(fecha.value);
   }
 
-  function parseInputDateTime() {
-    ensureDateSet();
-    const [y,m,d]=fecha.value.split('-').map(Number);
-    const hh = Number(hourSel && hourSel.value ? hourSel.value : '12');
-    const mm = Number(minuteSel && minuteSel.value ? minuteSel.value : '00');
-    return new Date(y||0, (m||1)-1, d||1, hh, mm, 0, 0);
-  }
   function fmtFecha(dt){
     const wd = WD[dt.getDay()], day = dt.getDate(), month = MO[dt.getMonth()], year = dt.getFullYear();
     return `${wd}, día ${day} de ${month} de ${year}`;
   }
   function fmtHora(dt){ return `${two(dt.getHours())}:${two(dt.getMinutes())} horas`; }
 
-  const OFFICE_LINE  = 'Calle Esperanto, 5, 7-B de Benidorm.';
   function isDespacho(text){
     if(!text || !text.trim()) return true;
     const t = text.toLowerCase();
     return t.includes('despacho - artigas abogados') && t.includes('esperanto') && t.includes('benidorm');
   }
+
   function normalizeExternalLoc(raw){
     if(!raw) return '';
     let s = raw.replace(/\s+/g,' ').trim();
@@ -198,15 +240,28 @@ document.addEventListener('DOMContentLoaded', function(){
     return s;
   }
 
-  function genConfirmDespacho(dt, mapsUrl){
+  function getSelectedDateTime(){
+    let dt;
+    try { dt = fecha.valueAsDate; } catch(e) { dt = null; }
+    if (!dt || isNaN(dt)) {
+      const [y,m,d]=(fecha.value||'').split('-').map(Number);
+      dt = new Date(y||0, (m||1)-1, d||1, 0, 0, 0, 0);
+    }
+    const hh = Number((document.getElementById('hour')||{}).value || '12');
+    const mm = Number((document.getElementById('minute')||{}).value || '00');
+    dt.setHours(hh, mm, 0, 0);
+    return dt;
+  }
+
+  function genConfirmDespacho(dt, link){
     const f = fmtFecha(dt), h = fmtHora(dt);
-    const link = (mapsUrl||'').trim();
+    const l = (link && link.trim()) ? link.trim() : DESPACHO_LINK;
     return [
       'Estimado/a cliente:',
       '',
       `Le confirmamos su cita en Artigas Abogados para el ${f}, a las ${h}, en nuestro despacho sito en ${OFFICE_LINE}`,
       '',
-      link,
+      l,
       '',
       'En caso de que no pudiera acudir, le agradeceríamos que nos lo comunicara respondiendo a este mismo WhatsApp o al correo info@artigasabogados.com, con el fin de reorganizar la agenda y poder establecer una nueva cita.',
       '',
@@ -214,15 +269,15 @@ document.addEventListener('DOMContentLoaded', function(){
       'Artigas Abogados'
     ].join('\n');
   }
-  function genRecordDespacho(dt, mapsUrl){
+  function genRecordDespacho(dt, link){
     const h = fmtHora(dt);
-    const link = (mapsUrl||'').trim();
+    const l = (link && link.trim()) ? link.trim() : DESPACHO_LINK;
     return [
       'Estimado/a cliente:',
       '',
       `Le recordamos su cita en Artigas Abogados para mañana a las ${h}, en nuestro despacho sito en ${OFFICE_LINE}`,
       '',
-      link,
+      l,
       '',
       'En caso de que no pudiera acudir, le agradeceríamos que nos lo comunicara respondiendo a este mismo WhatsApp o al correo info@artigasabogados.com, con el fin de reorganizar la agenda.',
       '',
@@ -230,37 +285,37 @@ document.addEventListener('DOMContentLoaded', function(){
       'Artigas Abogados'
     ].join('\n');
   }
-  function genConfirmOtra(dt, locRaw){
+  function genConfirmOtra(dt, locRaw, link){
     const f = fmtFecha(dt), h = fmtHora(dt);
     const loc = normalizeExternalLoc(locRaw);
-    return [
+    const lines = [
       'Estimado/a cliente:',
       '',
       `Le confirmamos su cita con Adolfo Artigas para el ${f}, a las ${h}, en ${loc}`,
-      '',
-      'En caso de que no pudiera asistir, le agradeceríamos que nos lo comunicara respondiendo a este mismo WhatsApp o al correo info@artigasabogados.com, con el fin de reorganizar la agenda.',
-      '',
-      'Un cordial saludo,',
-      'Artigas Abogados'
-    ].join('\n');
+      ''
+    ];
+    if (link && link.trim()) { lines.push(link.trim(), ''); }
+    lines.push('En caso de que no pudiera asistir, le agradeceríamos que nos lo comunicara respondiendo a este mismo WhatsApp o al correo info@artigasabogados.com, con el fin de reorganizar la agenda.');
+    lines.push('', 'Un cordial saludo,', 'Artigas Abogados');
+    return lines.join('\n');
   }
-  function genRecordOtra(dt, locRaw){
+  function genRecordOtra(dt, locRaw, link){
     const h = fmtHora(dt);
     const loc = normalizeExternalLoc(locRaw);
-    return [
+    const lines = [
       'Estimado/a cliente:',
       '',
       `Le recordamos su cita con Adolfo Artigas para mañana a las ${h}, en ${loc}`,
-      '',
-      'En caso de que no pudiera asistir, le agradeceríamos que nos lo comunicara respondiendo a este mismo WhatsApp o al correo info@artigasabogados.com, con el fin de reorganizar la agenda.',
-      '',
-      'Un cordial saludo,',
-      'Artigas Abogados'
-    ].join('\n');
+      ''
+    ];
+    if (link && link.trim()) { lines.push(link.trim(), ''); }
+    lines.push('En caso de que no pudiera asistir, le agradeceríamos que nos lo comunicara respondiendo a este mismo WhatsApp o al correo info@artigasabogados.com, con el fin de reorganizar la agenda.');
+    lines.push('', 'Un cordial saludo,', 'Artigas Abogados');
+    return lines.join('\n');
   }
 
   function generar(){
-    const dt = parseInputDateTime();
+    const dt = getSelectedDateTime();
     if(!dt || isNaN(dt.getTime())){
       warn.hidden=false; salida.textContent='';
       return;
@@ -268,32 +323,43 @@ document.addEventListener('DOMContentLoaded', function(){
     warn.hidden=true;
     const desp = isDespacho(ubic.value);
     let text='';
-    if(tipo.value === 'confirmacion'){
-      text = desp ? genConfirmDespacho(dt, maps.value) : genConfirmOtra(dt, ubic.value);
+    warnMaps.hidden = true;
+
+    if(tipoSel.value === 'confirmacion'){
+      text = desp ? genConfirmDespacho(dt, maps.value) : genConfirmOtra(dt, ubic.value, maps.value);
     }else{
-      text = desp ? genRecordDespacho(dt, maps.value) : genRecordOtra(dt, ubic.value);
+      text = desp ? genRecordDespacho(dt, maps.value) : genRecordOtra(dt, ubic.value, maps.value);
     }
+
+    if (!desp && !(maps.value && maps.value.trim())) {
+      warnMaps.hidden = false;
+    }
+
     salida.textContent = text;
   }
 
-  // Eventos
-  document.getElementById('gen').addEventListener('click', function(e){ e.preventDefault(); generar(); });
-  document.getElementById('copiar').addEventListener('click', async function(e){
-    e.preventDefault();
-    const t = salida.textContent || '';
-    if(!t) return;
-    try { await navigator.clipboard.writeText(t); } catch(e) {}
+  // Inicialización
+  ensureDateSet();
+  document.getElementById('hour').value = '12';
+  document.getElementById('minute').value = '00';
+  generar();
+
+  // Sincroniza fake cuando cambie nativo
+  fecha.addEventListener('change', ()=>{
+    fake.textContent = ymdToDisplay(fecha.value);
   });
 
-  // Prefill: hoy; 12:00 por defecto; generar de arranque
-  (function prefill(){
-    const today = new Date();
-    const y=today.getFullYear(), m=today.getMonth()+1, d=today.getDate();
-    if (!fecha.value) fecha.value = `${y}-${(m<10?'0'+m:m)}-${(d<10?'0'+d:d)}`;
-    document.getElementById('hour').value = '12';
-    document.getElementById('minute').value = '00';
-  })();
-  generar();
+  // Abrir picker al pulsar fake o botón
+  function openPicker(){
+    if (typeof fecha.showPicker === 'function') {
+      try { fecha.showPicker(); return; } catch(e){}
+    }
+    fecha.focus();
+  }
+  fake.addEventListener('click', openPicker);
+  btnFecha.addEventListener('click', openPicker);
+
+  // Acceso por teclado: si el nativo recibe foco, no pasa nada; el valor se refleja en change
 });
 </script>
 </body>
