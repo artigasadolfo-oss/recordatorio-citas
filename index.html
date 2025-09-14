@@ -5,98 +5,163 @@
 <title>RECORDATORIO DE CITAS</title>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="color-scheme" content="light dark">
-<link rel="manifest" href="manifest.webmanifest">
+<link rel="manifest" href="manifest.webmanifest?v=2">
 <link rel="apple-touch-icon" href="icon-180.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="theme-color" content="#0ea5e9">
 <style>
   *,*::before,*::after{ box-sizing:border-box }
+
+  /* ===== Paleta base (oscuro por defecto con contraste alto) ===== */
   :root{
-    --bg:#0f172a; --card:#111827; --muted:#9ca3af; --text:#e5e7eb; --accent:#06b6d4; --border:rgba(255,255,255,.12);
-    --copy-bg:#16a34a; --copy-bg2:#059669; --copy-border:rgba(22,163,74,.35);
-    --reset-bg:#ef4444; --reset-bg2:#dc2626; --reset-border:rgba(239,68,68,.4);
-    --hint:#6b7280; --ctl-h: 44px;
+    --bg:#0b1220;         /* fondo general */
+    --panel:#0f1629;      /* cabecera */
+    --card:#141d33;       /* tarjetas */
+    --elev:#1a2440;       /* elementos elevados */
+
+    --text:#e6ebf5;
+    --muted:#9aa4b2;
+    --hint:#8090a7;
+    --border:rgba(230,235,245,.10);
+
+    --accent:#11a6ea;
+    --copy-bg:#16a34a; --copy-bg2:#0f9d47; --copy-border:rgba(34,197,94,.28);
+    --reset-bg:#ef4444; --reset-bg2:#dc2626; --reset-border:rgba(239,68,68,.38);
+
+    --ctl-h:44px;
   }
+
+  /* ===== Modo claro con contraste (nada de “todo blanco”) ===== */
   @media (prefers-color-scheme: light){
     :root{
-      --bg:#f6f7fb; --card:#ffffff; --muted:#6b7280; --text:#0b1220; --accent:#0ea5e9; --border:rgba(0,0,0,.12);
-      --copy-bg:#16a34a; --copy-bg2:#22c55e; --copy-border:rgba(34,197,94,.35);
-      --reset-bg:#ef4444; --reset-bg2:#f87171; --reset-border:rgba(239,68,68,.35);
-      --hint:#9ca3af;
+      --bg:#e9eef6;
+      --panel:#ffffff;
+      --card:#f3f6fb;
+      --elev:#eef3ff;
+
+      --text:#0b1220;
+      --muted:#5b6473;
+      --hint:#8892a6;
+      --border:rgba(10,25,50,.12);
+
+      --accent:#0ea5e9;
+      --copy-bg:#16a34a; --copy-bg2:#22c55e; --copy-border:rgba(34,197,94,.28);
+      --reset-bg:#ef4444; --reset-bg2:#f87171; --reset-border:rgba(239,68,68,.30);
     }
   }
+
   html,body{height:100%}
-  body{ margin:0; background:var(--bg); color:var(--text);
+  body{
+    margin:0; color:var(--text);
     font-family: system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Helvetica,Arial;
-    -webkit-font-smoothing: antialiased; line-height:1.35; }
-  header{ background:#fff; color:#0b1220; width:100%; box-shadow:0 2px 8px rgba(0,0,0,.08); }
+    -webkit-font-smoothing: antialiased; line-height:1.35;
+
+    /* Fondo con degradados suaves para que JAMÁS se vea “todo blanco” */
+    background:
+      radial-gradient(1200px 800px at 20% -10%, rgba(14,165,233,.12), transparent 55%),
+      radial-gradient(1100px 700px at 100% 10%, rgba(34,197,94,.08), transparent 45%),
+      var(--bg);
+  }
+
+  header{
+    background: var(--panel); color: var(--text);
+    width:100%; box-shadow:0 2px 10px rgba(0,0,0,.18);
+    border-bottom:1px solid var(--border);
+  }
   .header-inner{ max-width:1100px; margin:0 auto; padding:18px 16px; display:flex; align-items:center; }
   header h1{ margin:0; font-size:22px; font-weight:800; letter-spacing:.3px; text-transform:uppercase; }
+
   .container{ max-width:1100px; margin:16px auto 24px; padding:0 16px; }
   .wrap{ display:grid; grid-template-columns: 1fr 1fr; gap:20px; }
   @media (max-width: 900px){ .wrap{ grid-template-columns:1fr; } }
-  .card{ background:var(--card); border:1px solid var(--border); border-radius:18px; box-shadow:0 8px 24px rgba(0,0,0,.08); overflow:hidden; }
+
+  .card{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-radius:18px;
+    box-shadow:
+      0 10px 24px rgba(0,0,0,.22),
+      inset 0 1px 0 rgba(255,255,255,.02);
+    overflow:hidden;
+  }
   .left, .out, .foot { padding:18px; }
+
   h2{ margin:0 0 10px; font-size:16px; font-weight:700 }
   label{font-size:12px; color:var(--muted); display:block; margin:10px 0 6px}
+
   input,textarea,select{
     display:block; width:100%; max-width:100%;
     padding:12px; border-radius:12px; border:1px solid var(--border);
-    background:transparent; color:var(--text); outline:none; font-size:16px;
-    line-height:1.3;
+    background:rgba(255,255,255,.05); color:var(--text); outline:none; font-size:16px; line-height:1.3;
+    box-shadow: inset 0 1px 2px rgba(0,0,0,.12);
+  }
+  @media (prefers-color-scheme: light){
+    input,textarea,select{ background:rgba(255,255,255,.7); box-shadow: inset 0 1px 2px rgba(0,0,0,.06); }
+  }
+  input:focus, textarea:focus, select:focus{
+    border-color: rgba(14,165,233,.45);
+    box-shadow: 0 0 0 3px rgba(14,165,233,.15);
   }
   select{ height: var(--ctl-h); line-height: calc(var(--ctl-h) - 2px); }
+
   .date-row{ display:flex; gap:8px; align-items:center; }
   .date-wrap{ position:relative; flex:1 }
   .date-fake{
     height: var(--ctl-h); width:100%;
     border:1px solid var(--border); border-radius:12px;
     padding: 10px 12px; display:flex; align-items:center;
-    background:transparent; color:var(--text);
+    background:rgba(255,255,255,.05); color:var(--text);
     font-size:16px; line-height:1.3; user-select:none;
   }
-  .date-native{
-    position:absolute; inset:0; width:100%; height:100%;
-    opacity:0;
-    -webkit-appearance:none; appearance:none;
+  @media (prefers-color-scheme: light){
+    .date-fake{ background:rgba(255,255,255,.7); }
   }
+  .date-native{ position:absolute; inset:0; width:100%; height:100%; opacity:0; -webkit-appearance:none; appearance:none; }
   .date-row button{
     flex:0 0 auto; height: var(--ctl-h); padding:0 14px; border-radius:12px;
-    border:1px solid var(--border); background:var(--card); color:var(--text);
-    font-size:15px; font-weight:700; display:inline-flex; align-items:center; justify-content:center; gap:10px; cursor:pointer; line-height:1;
+    border:1px solid var(--border);
+    background:linear-gradient(180deg, var(--panel), rgba(255,255,255,.02));
+    color:var(--text); font-size:15px; font-weight:700;
+    display:inline-flex; align-items:center; justify-content:center; gap:10px; cursor:pointer; line-height:1;
   }
-  .date-row button:hover,.date-row button:focus-visible{ outline:none; border-color: rgba(14,165,233,.5); box-shadow: 0 0 0 3px rgba(14,165,233,.15); }
+  .date-row button:hover,.date-row button:focus-visible{
+    outline:none; border-color: rgba(14,165,233,.5);
+    box-shadow: 0 0 0 3px rgba(14,165,233,.15);
+  }
 
   textarea{ min-height:84px; resize:vertical; }
   textarea::placeholder{ color: var(--hint); opacity:.75; white-space:pre-line; }
+
   .row{ display:grid; grid-template-columns:1fr 1fr; gap:12px }
   @media (max-width: 640px){ .row{ grid-template-columns:1fr; } }
 
   .btn-copy{
     width:100%; background:linear-gradient(180deg,var(--copy-bg),var(--copy-bg2));
     border:1px solid var(--copy-border); color:#fff; padding:12px 16px; font-weight:700; border-radius:12px; cursor:pointer;
+    box-shadow: 0 6px 20px rgba(22,163,74,.20);
   }
   .btn-reset{
     width:100%; background:linear-gradient(180deg,var(--reset-bg),var(--reset-bg2));
     border:1px solid var(--reset-border); color:#fff; padding:12px 16px; font-weight:700; border-radius:12px; cursor:pointer;
+    box-shadow: 0 6px 20px rgba(239,68,68,.22);
   }
   .foot-actions{ display:grid; grid-template-columns:1fr 1fr; gap:12px }
 
-  /* Feedback “sombreado” al pulsar */
-  .btn-copy:is(:active,.is-pressed),
-  .btn-reset:is(:active,.is-pressed){
+  .btn-copy:is(:active,.is-pressed), .btn-reset:is(:active,.is-pressed){
     filter: brightness(.9);
     box-shadow: inset 0 0 0 9999px rgba(0,0,0,.08);
   }
-  .btn-copy:disabled, .btn-reset:disabled{
-    opacity:.6; cursor:not-allowed;
-  }
+  .btn-copy:disabled, .btn-reset:disabled{ opacity:.6; cursor:not-allowed; }
 
-  pre{ margin:0; background:transparent; border:1px dashed var(--border);
+  pre{
+    margin:0; background:var(--elev);
+    border:1px dashed var(--border);
     border-radius:12px; padding:14px; white-space:pre-wrap; word-break:break-word; min-height:240px;
-    text-align: justify; text-justify: inter-word; }
-  .warn{ color:#dc2626; font-size:12px; margin-top:8px }
+    text-align: justify; text-justify: inter-word;
+    box-shadow: inset 0 1px 2px rgba(0,0,0,.10);
+  }
+  .warn{ color:#fca5a5; font-size:12px; margin-top:8px }
   .spacer{ height:8px }
   .muted { color: var(--hint); }
 </style>
@@ -178,8 +243,9 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function(){
+  // Registro del SW con “cache-buster” para evitar servir HTML antiguo
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('./service-worker.js', {scope: './'}).catch(()=>{});
+    navigator.serviceWorker.register('./service-worker.js?v=2', {scope: './'}).catch(()=>{});
   }
 
   // DOM
@@ -208,9 +274,7 @@ document.addEventListener('DOMContentLoaded', function(){
     if(!y||!m||!d) return 'dd/mm/aaaa';
     return String(d).padStart(2,'0') + '/' + String(m).padStart(2,'0') + '/' + y;
   }
-  function fmtFecha(dt){
-    return `${WD[dt.getDay()]} ${dt.getDate()} de ${MO[dt.getMonth()]} de ${dt.getFullYear()}`;
-  }
+  function fmtFecha(dt){ return `${WD[dt.getDay()]} ${dt.getDate()} de ${MO[dt.getMonth()]} de ${dt.getFullYear()}`; }
   function fmtHora(dt){ return `${two(dt.getHours())}:${two(dt.getMinutes())} horas`; }
   function isTomorrow(dt){
     const now = new Date();
@@ -230,7 +294,7 @@ document.addEventListener('DOMContentLoaded', function(){
     return dt;
   }
 
-  // Mensajes
+  // Mensajes (misma lógica que tenías)
   function msgConfirmDespacho(dt){
     return [
       'Estimado/a cliente:',
@@ -264,15 +328,11 @@ document.addEventListener('DOMContentLoaded', function(){
       'Estimado/a cliente:',
       '',
       `Le confirmamos su cita con Adolfo Artigas para el ${fmtFecha(dt)} a las ${fmtHora(dt)}, en ${dir}.`,
-      '' // salto tras dirección
+      ''
     ];
     const l = (link && link.trim()) ? link.trim() : '';
     if (l) lines.push(l, '');
-    lines.push(
-      'En caso de que no pudiera asistir, le agradeceríamos que nos lo comunicara respondiendo a este mismo WhatsApp, con el fin de reorganizar la agenda y poder fijar una nueva cita.',
-      '',
-      'Reciba un cordial saludo.'
-    );
+    lines.push('En caso de que no pudiera asistir, le agradeceríamos que nos lo comunicara respondiendo a este mismo WhatsApp, con el fin de reorganizar la agenda y poder fijar una nueva cita.','', 'Reciba un cordial saludo.');
     return lines.join('\n');
   }
   function msgRecordOtra(dt, dir, link){
@@ -281,15 +341,11 @@ document.addEventListener('DOMContentLoaded', function(){
       'Estimado/a cliente:',
       '',
       `Le recordamos su cita con Adolfo Artigas para ${cuando}, en ${dir}.`,
-      '' // salto tras dirección
+      ''
     ];
     const l = (link && link.trim()) ? link.trim() : '';
     if (l) lines.push(l, '');
-    lines.push(
-      'En caso de que no pudiera asistir, le agradeceríamos que nos lo comunicara respondiendo a este mismo WhatsApp, con el fin de reorganizar la agenda y poder fijar una nueva cita.',
-      '',
-      'Reciba un cordial saludo.'
-    );
+    lines.push('En caso de que no pudiera asistir, le agradeceríamos que nos lo comunicara respondiendo a este mismo WhatsApp, con el fin de reorganizar la agenda y poder fijar una nueva cita.','', 'Reciba un cordial saludo.');
     return lines.join('\n');
   }
 
@@ -320,9 +376,7 @@ document.addEventListener('DOMContentLoaded', function(){
   function generar(){
     const dt = getSelectedDateTime();
     if(!dt || isNaN(dt.getTime())){
-      warn.hidden = false;
-      salida.textContent = '';
-      return;
+      warn.hidden = false; salida.textContent = ''; return;
     }
     warn.hidden = true;
 
@@ -335,9 +389,7 @@ document.addEventListener('DOMContentLoaded', function(){
     } else if (dirRaw === DESPACHO_TXT) {
       texto = (tipoSel.value === 'confirmacion') ? msgConfirmDespacho(dt) : msgRecordDespacho(dt);
     } else {
-      texto = (tipoSel.value === 'confirmacion')
-        ? msgConfirmOtra(dt, dirRaw, linkRaw)
-        : msgRecordOtra(dt, dirRaw, linkRaw);
+      texto = (tipoSel.value === 'confirmacion') ? msgConfirmOtra(dt, dirRaw, linkRaw) : msgRecordOtra(dt, dirRaw, linkRaw);
     }
 
     salida.textContent = texto;
@@ -379,7 +431,7 @@ document.addEventListener('DOMContentLoaded', function(){
     try { fecha.click(); } catch(e){}
     fecha.focus();
   }
-  btnFecha.addEventListener('click', openNativePicker);
+  document.getElementById('abrirFecha').addEventListener('click', openNativePicker);
   fake.addEventListener('click', openNativePicker);
 
   fecha.addEventListener('change', ()=>{ fake.textContent = ymdToDisplay(fecha.value); generar(); });
@@ -391,22 +443,14 @@ document.addEventListener('DOMContentLoaded', function(){
   ubic.addEventListener('input', ()=>{
     const dir = (ubic.value || '').trim();
     if (dir === '' || dir !== DESPACHO_TXT) {
-      if ((maps.value || '').trim() === DEFAULT_MAPS) {
-        maps.value = ''; // no reponer automáticamente
-      }
+      if ((maps.value || '').trim() === DEFAULT_MAPS) { maps.value = ''; }
     }
     generar();
   });
   maps.addEventListener('input', generar);
 
-  btnCopiar.addEventListener('click', ()=>{
-    navigator.clipboard.writeText(salida.textContent);
-    pressEffect(btnCopiar);
-  });
-  btnReiniciar.addEventListener('click', ()=>{
-    resetAll();
-    pressEffect(btnReiniciar);
-  });
+  btnCopiar.addEventListener('click', ()=>{ navigator.clipboard.writeText(salida.textContent); pressEffect(btnCopiar); });
+  btnReiniciar.addEventListener('click', ()=>{ resetAll(); pressEffect(btnReiniciar); });
 
   // Primer render
   generar();
