@@ -240,20 +240,7 @@ function seed(){
   const base=startOfDay(new Date());
   const mk=(off,hora)=>{const d=new Date(base);d.setDate(d.getDate()+off);return ymd(d);};
   const todayStr=ymd(base);
-  const rows=[
-    ['Rosa M. Belmonte','Divorcio — primera visita',0,'12:30','626 830 084','confirmada',true,true],
-    ['C. P. Edif. Mirador','Junta — reclamación de cuotas',0,'17:00','','sinconfirmar',false,false],
-    ['Grupo Salinas S.L.','Vicios ocultos en nave',1,'10:00','965 000 000','confirmada',false,true],
-    ['Herederos de J. Ferri','Extinción de condominio',2,'09:30','','pendiente',false,false],
-    ['Familia Ortuño','Herencia — cuaderno particional',2,'12:30','600 112 233','confirmada',true,true],
-    ['Inmobiliaria Costa Blanca','Revisión de arrendamiento',2,'16:00','965 445 566','sinconfirmar',false,false],
-    ['D. Navarro Piera','Reclamación de cantidad',3,'09:30','622 778 899','sinconfirmar',true,false],
-    ['Administraciones Benicasa','Impugnación de acuerdo',3,'16:00','912 345 678','confirmada',false,true],
-    ['C. P. Los Álamos','Defecto constructivo — LOE',5,'11:00','965 220 011','pendiente',false,false],
-    ['Talleres Bernabeu S.L.','Contrato mercantil',6,'10:30','965 330 022','confirmada',true,true],
-    ['Marta Sellés','Consulta de divorcio',-4,'10:00','631 090 090','confirmada',false,true],
-    ['Comunidad Playa Sol','Firma de acuerdo',-7,'12:00','','confirmada',false,true]
-  ];
+  const rows=[];
   return rows.map((r,i)=>({
     id:'c'+i+'_'+Math.random().toString(36).slice(2,7),
     cliente:r[0],asunto:r[1],fecha:mk(r[2]),hora:r[3],telefono:r[4],estado:r[5],
