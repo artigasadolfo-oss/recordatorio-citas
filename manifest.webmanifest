@@ -1,5 +1,5 @@
 {
-  "name": "RECORDATORIO DE CITAS",
+  "name": "Recordatorio de Citas",
   "short_name": "Citas",
   "description": "Generador de mensajes de WhatsApp para confirmaciones y recordatorios.",
   "start_url": "./index.html",
